@@ -2,12 +2,14 @@ package com.xworkz.showroomapp.service;
 
 import com.xworkz.showroomapp.dto.UserRegistrationDto;
 import com.xworkz.showroomapp.entity.UserRegistrationEntity;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface UserRegistrationService {
-    String registerUser(UserRegistrationDto dto);
+    String registerUser(UserRegistrationDto dto) throws IOException;
     List<UserRegistrationEntity> getAllUser();
     void updateReasonById(Integer id, String reason, String dateTime);
     UserRegistrationEntity getUserById(Integer id);
@@ -19,4 +21,5 @@ public interface UserRegistrationService {
     Boolean generateOtp(String email);
     Boolean verifyOtp(String email, String otp);
     Boolean resetPassword(String email, String otp, String newPassword);
+    boolean updateUsers(UserRegistrationEntity user, MultipartFile file);
 }

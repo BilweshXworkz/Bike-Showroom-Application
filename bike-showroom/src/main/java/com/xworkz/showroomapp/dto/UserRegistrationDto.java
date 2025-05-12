@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class UserRegistrationDto {
     private Integer Id;
+    private MultipartFile profileImage;
     private String fullName;
     private Integer age;
     private Long phoneNumber;

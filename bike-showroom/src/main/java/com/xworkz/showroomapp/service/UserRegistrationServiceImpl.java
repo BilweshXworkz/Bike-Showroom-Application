@@ -8,10 +8,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -23,7 +28,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
     UserRegistrationRepository repository;
 
     @Override
-    public String registerUser(UserRegistrationDto dto) {
+    public String registerUser(UserRegistrationDto dto) throws IOException {
         String error;
 
         if ((error = validateName(dto.getFullName())) != null){
@@ -48,6 +53,15 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 
         UserRegistrationEntity entity = new UserRegistrationEntity();
         BeanUtils.copyProperties(dto, entity);
+
+//        String folderPath = "E:\\bike-image\\";
+//        if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
+//            String profileName = System.currentTimeMillis() + "_" + dto.getProfileImage().getOriginalFilename();
+//            Path frontPath = Paths.get(folderPath + profileName);
+//            Files.write(frontPath, dto.getProfileImage().getBytes());
+//            entity.setProfileImage(profileName);
+//        }
+
         repository.registerUser(entity);
 
         return "Registered";
@@ -161,6 +175,19 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
             entity.setAddress(dto.getAddress());
             entity.setDlNumber(dto.getDlNumber());
 
+            if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
+                try {
+                    String folderPath = "E:\\bike-image\\profile image";
+                    String profileName = System.currentTimeMillis() + "_" + dto.getProfileImage().getOriginalFilename();
+                    Path frontPath = Paths.get(folderPath + profileName);
+                    Files.write(frontPath, dto.getProfileImage().getBytes());
+                    entity.setProfileImage(profileName.getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+
             // Save updated entity
             repository.updateUser(entity);
             return true;
@@ -207,6 +234,40 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
             return true;
         }
         return false;
+    }
+
+    @Override
+    public boolean updateUsers(UserRegistrationEntity user, MultipartFile file) {
+        try {
+            // 1. Fetch existing user by email or ID (whichever is present)
+            UserRegistrationEntity existing = repository.findByEmailId(user.getEmailId());
+            if (existing == null) {
+                return false;
+            }
+
+            // 2. Update only the required fields
+            existing.setFullName(user.getFullName());
+            existing.setAge(user.getAge());
+            existing.setPhoneNumber(user.getPhoneNumber());
+            existing.setAddress(user.getAddress());
+            existing.setDlNumber(user.getDlNumber());
+            existing.setShowroomName(user.getShowroomName());
+            existing.setModelName(user.getModelName());
+
+            // 3. Update image only if a new one is uploaded
+            if (!file.isEmpty()) {
+                byte[] imageBytes = file.getBytes();
+                existing.setProfileImage(imageBytes);
+            }
+
+            // 4. Save updated user
+            repository.updateUser(existing);
+            return true;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     private Boolean sendEmail(String email, String otp) {

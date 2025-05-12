@@ -10,12 +10,15 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.mock.web.MockMultipartFile;
 
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.transaction.Transactional;
 import javax.validation.*;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -230,16 +233,38 @@ public class AdminServiceImpl implements AdminService{
     @Override
     public AddBikeDto fetchBike(String modelName) {
         if (modelName != null) {
-            AddBikeDto dto =new AddBikeDto();
             AddBikeEntity entity = adminRepository.fetchBike(modelName);
-            try{
-                BeanUtils.copyProperties(entity, dto);
-                return dto;
-            } catch (BeansException e) {
-                throw new RuntimeException(e);
+            AddBikeDto dto = new AddBikeDto();
+
+            BeanUtils.copyProperties(entity, dto);
+
+            try {
+                // Folder where images are saved
+                String uploadPath = "E:\\bike-image";
+
+                MultipartFile front = convertToMultipartFile(uploadPath, entity.getFrontImage());
+                MultipartFile back = convertToMultipartFile(uploadPath, entity.getBackImage());
+                MultipartFile left = convertToMultipartFile(uploadPath, entity.getLeftImage());
+                MultipartFile right = convertToMultipartFile(uploadPath, entity.getRightImage());
+
+                dto.setFrontImage(front);
+                dto.setBackImage(back);
+                dto.setLeftImage(left);
+                dto.setRightImage(right);
+
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+
+            return dto;
         }
         return null;
+    }
+
+    private MultipartFile convertToMultipartFile(String uploadDir, String fileName) throws IOException {
+        Path path = Paths.get(uploadDir, fileName);
+        byte[] content = Files.readAllBytes(path);
+        return new MockMultipartFile(fileName, fileName, Files.probeContentType(path), content);
     }
 
     @Override

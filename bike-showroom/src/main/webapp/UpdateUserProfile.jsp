@@ -62,7 +62,7 @@
 <div class="d-flex justify-content-center align-items-center vh-100 mt-5">
     <div class="form-container">
         <h2>Edit Profile</h2>
-        <form action="updateProfile" method="post">
+        <form action="updateProfile" method="post" enctype="multipart/form-data">
             <div class="row">
                 <c:if test="${not empty error}">
                     <div class="alert alert-danger">${error}</div>
@@ -70,6 +70,11 @@
                 <c:if test="${not empty success}">
                     <div class="alert alert-success">${success}</div>
                 </c:if>
+
+               <div class="col-md-6 mb-3">
+                   <label class="form-label">Profile Pic</label>
+                   <input type="file" class="form-control" name="backImage" accept="image/*" >
+               </div>
 
                 <div class="mb-3 col-md-6">
                     <label class="form-label">Full Name</label>
@@ -183,26 +188,25 @@
         }
     }
 
-    document.getElementById("showroomSelect").addEventListener("change", function () {
-        const showroomName = this.value;
-        fetch("http://localhost:8080/bike-showroom/getBikesByShowroom?showroomName=" + encodeURIComponent(showroomName), {
-            headers: { "Accept": "application/json" }
-        })
-        .then(response => response.json())
-        .then(data => {
-            const bikeModelSelect = document.getElementById("bikeModelSelect");
-            bikeModelSelect.innerHTML = '<option value="">Select Model</option>';
-            data.forEach(model => {
-                const option = document.createElement("option");
-                option.value = model;
-                option.textContent = model;
-                bikeModelSelect.appendChild(option);
-            });
-        })
-        .catch(error => {
-            console.error("Error loading bike models:", error);
-        });
-    });
+   document.getElementById("showroomSelect").addEventListener("change", function () {
+                    const showroomName = this.value;
+                    fetch("/bike-showroom/getBikesByShowroomName?showroomName=" + encodeURIComponent(showroomName))
+                        .then(response => response.json())
+                        .then(data => {
+                            const modelDropdown = document.getElementById("bikeModelSelect");
+                            modelDropdown.innerHTML = '<option value="">Select Model</option>';
+                            data.forEach(model => {
+                                const option = document.createElement("option");
+                                option.value = model;
+                                option.textContent = model;
+                                modelDropdown.appendChild(option);
+                            });
+                        })
+                        .catch(err => {
+                            console.error("Error loading bike models:", err);
+                            alert("Failed to load bike models.");
+                        });
+                });
 
 </script>
 

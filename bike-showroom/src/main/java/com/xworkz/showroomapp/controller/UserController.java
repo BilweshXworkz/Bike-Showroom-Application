@@ -5,17 +5,22 @@ import com.xworkz.showroomapp.dto.UserRegistrationDto;
 import com.xworkz.showroomapp.entity.UserRegistrationEntity;
 import com.xworkz.showroomapp.service.AdminService;
 import com.xworkz.showroomapp.service.UserRegistrationService;
+import org.hibernate.engine.jdbc.StreamUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.*;
 
 
@@ -23,7 +28,7 @@ import java.util.*;
 @RequestMapping("/")
 public class UserController {
 
-    private static final File IMAGE_DIRECTORY = new File("E://bike-images//");
+//    private static final String IMAGE_DIRECTORY = "E:\\bike-image";
     @Autowired
     AdminService adminService;
 
@@ -49,7 +54,7 @@ public class UserController {
     }
 
     @PostMapping ("userRegistration")
-    public String userRegistration (@ModelAttribute UserRegistrationDto dto, Model model) {
+    public String userRegistration (@ModelAttribute UserRegistrationDto dto, Model model) throws IOException {
         String userdetails = userRegistrationService.registerUser(dto);
         System.out.println(userdetails);
         if (!userdetails.equals("success")) {
@@ -129,42 +134,71 @@ public class UserController {
         return "user/UpdateUser";
     }
 
-    @RequestMapping ("updateProfile")
-    public String updateAndSave(@ModelAttribute UserRegistrationDto dto, Model model){
-        System.out.println("updateAndSave"+dto);
-        Boolean updateUser = userRegistrationService.updateUser(dto);
-        if (updateUser){
-            model.addAttribute("success","User Data Updated Successfully");
-        }else {
-            model.addAttribute("error", "User Data Not Updated");
+    @GetMapping("/editProfile")
+    public String editProfilePage(Model model, HttpSession session) {
+        String email = (String) session.getAttribute("loggedInUser");
+        if (email != null) {
+            UserRegistrationEntity user = userRegistrationService.fetctByEmail(email);
+            List<String> showroomList = adminService.getShowroomName();
+            model.addAttribute("user", user);
+            model.addAttribute("showroomList", showroomList);
+            return "UpdateUserProfile";
         }
-        return "UpdateUserProfile";
+        return "redirect:/login";
     }
 
-    @GetMapping ("exploreBikes")
-    public String exploreBikes(@RequestParam ("modelName") String modelName, Model model) {
+    @GetMapping("/getBikesByShowroomName")
+    @ResponseBody
+    public List<String> getBikesByShowroomNames(@RequestParam String showroomName) {
+        return adminService.getBikesByShowroomName(showroomName);
+    }
+
+    @GetMapping("exploreBikes")
+    public String exploreBikes(@RequestParam("modelName") String modelName, Model model) {
         AddBikeDto dto = adminService.fetchBike(modelName);
         model.addAttribute("model", dto);
         return "ExploreBikes";
     }
 
 
-    @GetMapping("/bike-image/{imageName:.+}")
-    public void getBikeImage(@PathVariable String imageName, HttpServletResponse response) throws IOException {
-        File imageFile = new File(IMAGE_DIRECTORY + imageName);
+    @GetMapping("/bike-image/{side}/{modelName}")
+    public void loadBikeImage(@PathVariable String side,
+                              @PathVariable String modelName,
+                              HttpServletResponse response) throws IOException {
+        AddBikeDto dto = adminService.fetchBike(modelName);
 
-        if (imageFile.exists()) {
-            response.setContentType("image/png"); // You can change according to your image type (jpeg/png)
-            FileInputStream fis = new FileInputStream(imageFile);
-            byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = fis.read(buffer)) != -1) {
-                response.getOutputStream().write(buffer, 0, bytesRead);
+        String imageName = null;
+        switch (side.toLowerCase()) {
+            case "front":
+                imageName = dto.getFrontImage().getOriginalFilename();
+                break;
+            case "back":
+                imageName = dto.getBackImage().getOriginalFilename();
+                break;
+            case "left":
+                imageName = dto.getLeftImage().getOriginalFilename();
+                break;
+            case "right":
+                imageName = dto.getRightImage().getOriginalFilename();
+                break;
+            default:
+                imageName = null;
+        }
+
+        if (imageName != null) {
+            File imageFile = new File("E:/bike-image/" + imageName);
+            if (imageFile.exists()) {
+                System.out.println(imageFile);
+                response.setContentType(Files.probeContentType(imageFile.toPath()));
+                StreamUtils.copy(Files.newInputStream(imageFile.toPath()), response.getOutputStream());
+            } else {
+                System.out.println("Image not found: " + imageFile.getAbsolutePath());
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
-            fis.close();
-            response.getOutputStream().flush();
         } else {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
+
+
 }

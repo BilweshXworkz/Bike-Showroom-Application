@@ -56,4 +56,6 @@ public class UserResetController {
     public String validateShowroomlocation(@PathVariable String location) {
         return repository.locationExists(location) ? "EmailId Exists":"";
     }
+
+
 }

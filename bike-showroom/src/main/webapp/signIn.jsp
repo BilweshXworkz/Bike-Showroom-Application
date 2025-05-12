@@ -9,13 +9,13 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #f0f2f5;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
+         body {
+             margin: 0;
+             padding: 0;
+             height: 100vh;
+             background: url('resources/images/image12.png') no-repeat center center fixed;
+             background-size: cover;
+         }
 
         .custom-card {
             width: 100%;
@@ -23,9 +23,11 @@
             padding: 30px;
             margin: auto;
             border-radius: 12px;
-            background: #ffffff;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
             margin-top: 50px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            color: black;
         }
 
         .navbar-brand img {
@@ -68,14 +70,14 @@
             padding: 6px 12px;
             font-size: 14px;
             border-radius: 6px;
-            background-color: #007bff;
+            background-color: green;
             color: #fff;
             border: none;
             transition: background-color 0.3s;
         }
 
         .refresh-btn:hover {
-            background-color: #0056b3;
+            background-color: green;
         }
 
         .forgot-link {
@@ -83,7 +85,7 @@
             text-align: right;
             margin-top: 10px;
             font-size: 14px;
-            color: #007bff;
+            color: black;
             text-decoration: none;
         }
 
@@ -119,7 +121,9 @@
 
             <div class="mb-3">
                 <label for="emailId" class="form-label">Email ID</label>
-                <input type="email" id="emailId" name="emailId" class="form-control" required placeholder="Enter your email">
+                <input type="email" id="emailId" name="emailId" class="form-control" required placeholder="Enter your email" onblur="onEmail()">
+                <small id="emailError" style="color: white;"></small>
+               <small id="displayEmail"  style="color: red;"></small>
             </div>
 
             <div class="mb-3">
@@ -137,10 +141,10 @@
             </div>
 
             <div class="d-grid mt-4">
-                <button type="submit" class="btn btn-primary submit-btn">Sign In</button>
+                <button type="submit" style="background-color: green;" class="btn btn-success submit-btn">Sign In</button>
             </div>
 
-            <a href="forgotPassword" class="forgot-link">Forgot Password?</a>
+            <a href="forgotPassword"  class="forgot-link">Forgot Password?</a>
         </form>
     </div>
 </div>
@@ -149,6 +153,24 @@
     function refreshCaptcha() {
         document.getElementById("captchaImage").src = "generateCaptcha?" + new Date().getTime();
     }
+
+    function onEmail() {
+            var email = document.getElementById('emailId').value.trim();
+            if (email !== "") {
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("GET", "http://localhost:8080/bike-showroom/signin/" + encodeURIComponent(email), true);
+                xhttp.send();
+
+                xhttp.onload = function () {
+                    if (this.status === 200) {
+                        document.getElementById("displayEmail").innerText = this.responseText;
+                    } else {
+                        console.error("Error while checking email.");
+                    }
+                };
+            }
+        }
+
 </script>
 
 </body>

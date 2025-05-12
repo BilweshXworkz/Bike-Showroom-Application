@@ -8,20 +8,40 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
      <style>
-                .form {
-                    height: 50vh;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                    background-color: #f8f9fa;
-                }
-                .custom-card {
-                    width: 40vw;
-                    height: 55vh;
-                    padding: 20px;
-                    border-radius: 10px;
-                    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-                }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f0f2f5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: url('resources/images/image8.jpg') no-repeat center center fixed;
+            background-size: cover;
+        }
+        .form {
+                height: 50vh;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background-color: #f8f9fa;
+            }
+            .custom-card {
+                width: 100%;
+                max-width: 450px;
+                padding: 30px;
+                margin: auto;
+                border-radius: 12px;
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+                margin-top: 50px;
+                background: rgba(255, 255, 255, 0.3);
+                backdrop-filter: blur(10px);
+                color: black;
+            }
             </style>
 </head>
 <body>

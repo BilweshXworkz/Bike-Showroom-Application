@@ -5,14 +5,18 @@ import com.xworkz.showroomapp.dto.CustomerRegistrationDto;
 import com.xworkz.showroomapp.dto.UserRegistrationDto;
 import com.xworkz.showroomapp.entity.CustomerRegistrationEntity;
 import com.xworkz.showroomapp.entity.UserRegistrationEntity;
+import com.xworkz.showroomapp.service.AdminService;
 import com.xworkz.showroomapp.service.CustomerRegistrationService;
+import com.xworkz.showroomapp.service.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +36,12 @@ import java.util.List;
 public class ClientController {
     @Autowired
     CustomerRegistrationService service;
+
+    @Autowired
+    AdminService adminService;
+
+    @Autowired
+    UserRegistrationService userRegistrationService;
 
     @GetMapping("exploreShowroom")
     public String exploreShowroom(){
@@ -138,10 +148,29 @@ public class ClientController {
         return new ModelAndView("signIn", "errorMessage", "Invalid Email or Password.");
     }
 
+    @GetMapping("/getBikesByShowroomNames")
+    @ResponseBody
+    public List<String> getBikeModels(@RequestParam String showroomName) {
+        return adminService.getBikesByShowroomName(showroomName); // Fetch bike models
+    }
+
     @GetMapping ("fetchByEmail")
     public String fetchByEmail(@RequestParam("emailId") String emailId, Model model) {
         UserRegistrationDto user = service.fetctByEmail(emailId);
+        List<String> showroomList = adminService.getShowroomName(); // You need this method
         model.addAttribute("user", user);
+        model.addAttribute("showroomList", showroomList);
+        return "UpdateUserProfile";
+    }
+
+    @PostMapping("/updateProfile")
+    public String updateProfile(@ModelAttribute UserRegistrationEntity user, @RequestParam("backImage") MultipartFile file, RedirectAttributes attributes) {
+        boolean updated = userRegistrationService.updateUsers(user, file);
+        if (updated) {
+            attributes.addFlashAttribute("success", "Profile updated successfully.");
+        } else {
+            attributes.addFlashAttribute("error", "Failed to update profile.");
+        }
         return "UpdateUserProfile";
     }
 

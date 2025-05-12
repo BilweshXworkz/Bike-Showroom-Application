@@ -261,37 +261,24 @@
         }
 
          document.getElementById("showroomSelect").addEventListener("change", function () {
-             const showroomName = this.value;
-             console.log("Selected showroom: ", showroomName);
-
-             const contextPath = '<c:url value="/"/>';
-             fetch(contextPath + "getBikesByShowroom?showroomName=" + encodeURIComponent(showroomName), {
-                 headers: {
-                     "Accept": "application/json"
-                 }
-             })
-             .then(response => {
-                 if (!response.ok) {
-                     throw new Error("HTTP error " + response.status);
-                 }
-                 return response.json();
-             })
-             .then(data => {
-                  console.log("Received bike model data: ", data);
-                  const bikeModelSelect = document.getElementById("bikeModelSelect");
-                  bikeModelSelect.innerHTML = '<option value="">Select Model</option>';
-                  data.forEach(model => {
-                      const option = document.createElement("option");
-                      option.value = model;
-                      option.textContent = model;
-                      bikeModelSelect.appendChild(option);
-                 });
-             })
-             .catch(error => {
-                 console.error("Error fetching bike models:", error);
-                 alert("Unable to load bike models. Please try again.");
+                 const showroomName = this.value;
+                 fetch("getBikesByShowroomName?showroomName=" + encodeURIComponent(showroomName))
+                     .then(response => response.json())
+                     .then(data => {
+                         const modelDropdown = document.getElementById("bikeModelSelect");
+                         modelDropdown.innerHTML = '<option value="">Select Model</option>';
+                         data.forEach(model => {
+                             const option = document.createElement("option");
+                             option.value = model;
+                             option.textContent = model;
+                             modelDropdown.appendChild(option);
+                         });
+                     })
+                     .catch(err => {
+                         console.error("Error loading bike models:", err);
+                         alert("Failed to load bike models.");
+                     });
              });
-         });
 
          function onName() {
              var name = document.getElementById('fullName');

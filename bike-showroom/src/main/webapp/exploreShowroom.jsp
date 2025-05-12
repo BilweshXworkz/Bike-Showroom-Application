@@ -12,7 +12,7 @@
              margin: 0;
              padding: 0;
              height: 100vh;
-             <--background: url('resources/images/image2..jpg') no-repeat center center fixed;-->
+             background: url('resources/images/image2..jpg') no-repeat center center fixed;
              background-size: cover;
          }
     </style>
@@ -29,7 +29,7 @@
         </div>
     </nav>
 
-    <div class="d-flex flex-column justify-content-center align-items-center text-center text-black" style="height: 80vh;">
+    <div class="d-flex flex-column justify-content-center align-items-center text-center text-white" style="height: 80vh;">
         <h1 class="display-4 fw-bold">Welcome to Royal Enfield Showroom</h1>
         <p class="lead">Experience Power. Style. Adventure.</p>
     </div>

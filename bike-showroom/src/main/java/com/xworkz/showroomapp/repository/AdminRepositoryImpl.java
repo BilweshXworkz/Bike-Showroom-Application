@@ -216,18 +216,36 @@ public class AdminRepositoryImpl implements AdminRepository {
         }
     }
 
+    @Transactional
     @Override
     public AddBikeEntity fetchBike(String modelName) {
         if (modelName == null || modelName.trim().isEmpty()) {
-            System.out.println("Invalid emailId provided.");
+            System.out.println("Invalid modelName provided.");
             return null;
         }
         try {
-            return entityManager.createQuery("SELECT b FROM AddBikeEntity b WHERE b.modelName = :modelName", AddBikeEntity.class)
+            // Fetch the bike entity based on the model name
+            AddBikeEntity bikeEntity = entityManager.createQuery("SELECT b FROM AddBikeEntity b WHERE b.modelName = :modelName", AddBikeEntity.class)
                     .setParameter("modelName", modelName)
                     .getSingleResult();
+
+            // Fetch the image details from the bike entity
+            String frontImage = bikeEntity.getFrontImage();
+            String backImage = bikeEntity.getBackImage();
+            String leftImage = bikeEntity.getLeftImage();
+            String rightImage = bikeEntity.getRightImage();
+
+            // Print or process the image names (just for example)
+            System.out.println("Repository Front Image: " + frontImage);
+            System.out.println("Repository Back Image: " + backImage);
+            System.out.println("Repository Left Image: " + leftImage);
+            System.out.println("Repository Right Image: " + rightImage);
+
+            // Return the complete bike entity (with images)
+            return bikeEntity;
+
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Error fetching bike data: " + e.getMessage(), e);
         }
     }
 

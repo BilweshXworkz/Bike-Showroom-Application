@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -22,6 +23,8 @@ public class UserRegistrationEntity {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     @Column (name = "id")
     private Integer Id;
+    @Column(name = "profile_image")
+    private byte[] profileImage;
     @Column (name = "full_name")
     private String fullName;
     @Column (name = "age")

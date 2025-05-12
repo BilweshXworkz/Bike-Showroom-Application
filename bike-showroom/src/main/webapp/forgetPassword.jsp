@@ -16,15 +16,24 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: url('resources/images/image8.jpg') no-repeat center center fixed;
+            background-size: cover;
         }
 
         .custom-card {
             width: 100%;
             max-width: 450px;
             padding: 30px;
+            margin: auto;
             border-radius: 12px;
-            background: #ffffff;
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 50px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            color: black;
         }
 
         .btn-custom-primary {
@@ -33,6 +42,7 @@
             font-weight: 600;
             border-radius: 8px;
             transition: background-color 0.3s ease;
+
         }
 
         .btn-custom-primary:hover {
@@ -72,9 +82,9 @@
    <form action="updatePassword" method="post">
        <div class="mb-3 text-start">
            <label for="emailId" class="form-label">Email ID</label>
-           <input type="email" id="emailId" name="emailId" class="form-control" required placeholder="Enter your email">
+           <input type="email" id="emailId" name="emailId" class="form-control" required placeholder="Enter your email" onblur="onEmail()">
            <small id="emailError" style="color: white;"></small>
-           <small id="displayEmail"  style="color: white;"></small>
+           <small id="displayEmail"  style="color: red;"></small>
        </div>
 
        <div class="mb-3 text-start">
@@ -113,7 +123,7 @@
 
         var xhttp = new XMLHttpRequest();
         if (emailValue !== "") {
-            xhttp.open("GET", "http://localhost:8080/bike-showroom/emailId/" + encodeURIComponent(emailValue), true);
+            xhttp.open("GET", "http://localhost:8080/bike-showroom/forgotPassword/emailId/" + encodeURIComponent(emailValue), true);
             xhttp.send();
 
             xhttp.onload = function() {
