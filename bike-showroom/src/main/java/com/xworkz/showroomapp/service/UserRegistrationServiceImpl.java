@@ -13,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -168,7 +169,7 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
         UserRegistrationEntity entity = repository.findByEmailId(dto.getEmailId());
 
         if (entity != null) {
-            // Update fields
+
             entity.setFullName(dto.getFullName());
             entity.setAge(dto.getAge());
             entity.setPhoneNumber(dto.getPhoneNumber());
@@ -177,18 +178,22 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
 
             if (dto.getProfileImage() != null && !dto.getProfileImage().isEmpty()) {
                 try {
-                    String folderPath = "E:\\bike-image\\profile image";
+                    String folderPath = "E:\\profile image\\";
                     String profileName = System.currentTimeMillis() + "_" + dto.getProfileImage().getOriginalFilename();
-                    Path frontPath = Paths.get(folderPath + profileName);
-                    Files.write(frontPath, dto.getProfileImage().getBytes());
-                    entity.setProfileImage(profileName.getBytes());
+
+                    Files.createDirectories(Paths.get(folderPath));
+
+                    Path filePath = Paths.get(folderPath + profileName);
+                    Files.write(filePath, dto.getProfileImage().getBytes());
+
+                    entity.setProfileImage(profileName);
                 } catch (IOException e) {
                     e.printStackTrace();
                     return false;
                 }
             }
 
-            // Save updated entity
+
             repository.updateUser(entity);
             return true;
         } else {
@@ -236,16 +241,17 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
         return false;
     }
 
+    private static final String UPLOAD_DIR = "E:/profile-images/";
+
     @Override
     public boolean updateUsers(UserRegistrationEntity user, MultipartFile file) {
         try {
-            // 1. Fetch existing user by email or ID (whichever is present)
+
             UserRegistrationEntity existing = repository.findByEmailId(user.getEmailId());
             if (existing == null) {
                 return false;
             }
 
-            // 2. Update only the required fields
             existing.setFullName(user.getFullName());
             existing.setAge(user.getAge());
             existing.setPhoneNumber(user.getPhoneNumber());
@@ -254,13 +260,17 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
             existing.setShowroomName(user.getShowroomName());
             existing.setModelName(user.getModelName());
 
-            // 3. Update image only if a new one is uploaded
             if (!file.isEmpty()) {
-                byte[] imageBytes = file.getBytes();
-                existing.setProfileImage(imageBytes);
+                String originalFilename = file.getOriginalFilename();
+                String uniqueFileName = System.currentTimeMillis() + "_" + originalFilename;
+                File destFile = new File(UPLOAD_DIR + uniqueFileName);
+
+                new File(UPLOAD_DIR).mkdirs();
+                file.transferTo(destFile);
+
+                existing.setProfileImage("profiles/" + uniqueFileName);
             }
 
-            // 4. Save updated user
             repository.updateUser(existing);
             return true;
 
@@ -311,6 +321,4 @@ public class UserRegistrationServiceImpl implements UserRegistrationService{
     }
         return null;
     }
-
-
 }

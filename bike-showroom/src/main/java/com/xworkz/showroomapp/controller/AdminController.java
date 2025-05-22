@@ -184,17 +184,17 @@ public class AdminController {
         } else {
             model.addAttribute("error", "Failed to remove bike.");
         }
-        // Forward to the removeBike JSP with the updated data
+
         List<AddBikeEntity> bikes = adminService.getBikesByShowroomNames(showroomName);
         model.addAttribute("bikes", bikes);
         model.addAttribute("showroomName", showroomName);
-        return "admin/removeBike"; // Forward to the removeBike.jsp page
+        return "admin/removeBike";
     }
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {
-        session.invalidate();  // Invalidate the session
-        return "redirect:/index.jsp";  // Redirect to the index page
+        session.invalidate();
+        return "redirect:/index.jsp";
     }
 
 }

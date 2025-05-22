@@ -73,7 +73,7 @@
 
                <div class="col-md-6 mb-3">
                    <label class="form-label">Profile Pic</label>
-                   <input type="file" class="form-control" name="backImage" accept="image/*" >
+                   <input type="file" class="form-control" name="updateProfile" accept="image/*" >
                </div>
 
                 <div class="mb-3 col-md-6">
@@ -112,7 +112,7 @@
 
                 <div class="mb-3 col-md-6">
                     <label class="form-label">Showroom Name</label>
-                    <select name="showroomName" class="form-control" required id="showroomSelect">
+                    <select name="showroomName" class="form-control" id="showroomSelect">
                         <option value="" selected disabled>- Select Showroom -</option>
                         <c:forEach var="showroom" items="${showroomList}">
                             <option value="${showroom}">${showroom}</option>
@@ -122,7 +122,7 @@
 
                 <div class="mb-3 col-md-6">
                     <label class="form-label">Bike Model</label>
-                    <select class="form-control" name="modelName" id="bikeModelSelect" required>
+                    <select class="form-control" name="modelName" id="bikeModelSelect">
                         <option value="">Select Model</option>
                         <!-- Optionally you can pre-load current selected model if needed -->
                     </select>

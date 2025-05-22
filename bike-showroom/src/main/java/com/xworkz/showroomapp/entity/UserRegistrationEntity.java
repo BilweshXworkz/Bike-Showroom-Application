@@ -23,8 +23,9 @@ public class UserRegistrationEntity {
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     @Column (name = "id")
     private Integer Id;
-    @Column(name = "profile_image")
-    private byte[] profileImage;
+    @Lob
+    @Column(name = "profile_image", columnDefinition = "LONGBLOB")
+    private String profileImage;
     @Column (name = "full_name")
     private String fullName;
     @Column (name = "age")

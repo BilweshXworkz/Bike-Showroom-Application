@@ -164,7 +164,7 @@ public class ClientController {
     }
 
     @PostMapping("/updateProfile")
-    public String updateProfile(@ModelAttribute UserRegistrationEntity user, @RequestParam("backImage") MultipartFile file, RedirectAttributes attributes) {
+    public String updateProfile(@ModelAttribute UserRegistrationEntity user, @RequestParam("updateProfile") MultipartFile file, RedirectAttributes attributes) {
         boolean updated = userRegistrationService.updateUsers(user, file);
         if (updated) {
             attributes.addFlashAttribute("success", "Profile updated successfully.");

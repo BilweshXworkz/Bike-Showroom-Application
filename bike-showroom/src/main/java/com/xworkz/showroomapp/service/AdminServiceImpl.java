@@ -239,7 +239,6 @@ public class AdminServiceImpl implements AdminService{
             BeanUtils.copyProperties(entity, dto);
 
             try {
-                // Folder where images are saved
                 String uploadPath = "E:\\bike-image";
 
                 MultipartFile front = convertToMultipartFile(uploadPath, entity.getFrontImage());
@@ -276,5 +275,4 @@ public class AdminServiceImpl implements AdminService{
     public List<String> getBikesByShowroomName(String showroomName) {
         return adminRepository.getBikeByShowroomName(showroomName);
     }
-
 }
